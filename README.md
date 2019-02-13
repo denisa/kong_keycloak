@@ -44,3 +44,4 @@ try with `curl http://localhost:8000/echo`
 ## Update the ip address when moving to a new network
 1. `curl http://localhost:8001/plugins | jq '.data[] | select(.name=="oidc") | .id'` returns the oidc plugin id for use in 
 1. `curl -s -X PATCH POST http://localhost:8001/plugins/46f801fb-3ac9-46a8-a3da-860b9743528d -d config.discovery=http://192.168.42.72:8180/auth/realms/master/.well-known/openid-configuration`
+1. Update the Root URL in keycloak's kong client definition
