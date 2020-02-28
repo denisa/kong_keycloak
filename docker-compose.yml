@@ -9,20 +9,25 @@ volumes:
 
 services:
   kong-db:
-    image: postgres:9.6
+    image: postgres:9.6-alpine
     init: true
+    restart: on-failure
     volumes:
       - kong-datastore:/var/lib/postgresql/data
     networks:
       - kong-net
-    ports:
-      - "5432:5432"
     environment:
-      POSTGRES_DB:       api-gw
+      POSTGRES_DB:       kong
       POSTGRES_USER:     kong
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-U", "kong"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   kong-migration:
-    image: kong:1.0.3-centos-oidc
+    image: kong_oidc:1.0-SNAPSHOT
     init: true
     depends_on:
       - kong-db
@@ -34,30 +39,32 @@ services:
       KONG_DATABASE:         postgres
       KONG_PG_HOST:          kong-db
       KONG_PG_PORT:          5432
-      KONG_PG_DATABASE:      api-gw
+      KONG_PG_DATABASE:      kong
+      KONG_PG_USER:          kong
+      KONG_PG_PASSWORD:      password
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG:  /dev/stderr
       KONG_ADMIN_ERROR_LOG:  /dev/stderr
 
   kong:
-    image: kong:1.0.3-centos-oidc
+    image: kong_oidc:1.0-SNAPSHOT
     init: true
+    restart: on-failure
     depends_on:
       - kong-migration
     networks:
       - kong-net
-    restart: on-failure
     ports:
       - "8000:8000" # Listener
       - "8001:8001" # Admin API
-      - "8443:8443" # Listener  (SSL)
-      - "8444:8444" # Admin API (SSL)
     environment:
       KONG_DATABASE:         postgres
       KONG_PG_HOST:          kong-db
       KONG_PG_PORT:          5432
-      KONG_PG_DATABASE:      api-gw
+      KONG_PG_DATABASE:      kong
+      KONG_PG_USER:          kong
+      KONG_PG_PASSWORD:      password
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG:  /dev/stderr
@@ -67,14 +74,13 @@ services:
       KONG_PLUGINS:          oidc
 
   keycloak-db:
-    image: postgres:9.6
+    image: postgres:9.6-alpine
     init: true
+    restart: on-failure
     volumes:
       - keycloak-datastore:/var/lib/postgresql/data
     networks:
       - kong-net
-    ports:
-      - "25432:5432"
     environment:
       POSTGRES_DB:       keycloak
       POSTGRES_USER:     keycloak
@@ -83,6 +89,7 @@ services:
   keycloak:
     image: jboss/keycloak:4.8.3.Final
     init: true
+    restart: on-failure
     depends_on:
       - keycloak-db
     networks:
@@ -90,17 +97,17 @@ services:
     ports:
       - "8180:8080"
     environment:
-      DB_VENDOR:   POSTGRES
-      DB_ADDR:     keycloak-db
-      DB_PORT:     5432
-      DB_DATABASE: keycloak
-      DB_USER:     keycloak
-      DB_PASSWORD: password
+      DB_VENDOR:         POSTGRES
+      DB_ADDR:           keycloak-db
+      DB_PORT:           5432
+      DB_DATABASE:       keycloak
+      DB_USER:           keycloak
+      DB_PASSWORD:       password
       KEYCLOAK_USER:     admin
       KEYCLOAK_PASSWORD: admin
 
   echo:
-    image: kong_keycloak
+    image: echo:1.0-SNAPSHOT
     init: true
     depends_on:
       - kong

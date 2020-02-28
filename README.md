@@ -2,20 +2,20 @@
 Launch with
 `docker run -p 8080:8080 -p 9990:9990 -it kong_keycloak`
 
-`curl http://localhost:8080/server/resources/message`
+`curl http://localhost:8080/server/resources/headers`
 
 ```
-curl http://localhost:8080/server/resources/message
+curl http://localhost:8080/server/resources/headers
 No authorization header
 ```
 
 ```
-curl -H 'Authorization: Basic foo' http://localhost:8080/server/resources/message
+curl -H 'Authorization: Basic foo' http://localhost:8080/server/resources/headers
 Not a Bearer  authorization
 ```
 
 ```
-curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2UifQ.Cy-XkzE1ZokAApN3c1S0ri0HSrdn8aKQi4HNRrbCgUE' http://localhost:8080/server/resources/message
+curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2UifQ.Cy-XkzE1ZokAApN3c1S0ri0HSrdn8aKQi4HNRrbCgUE' http://localhost:8080/server/resources/headers
 ```
 
 
@@ -24,7 +24,7 @@ curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2UifQ.Cy-XkzE1Z
 Following assume that the mac IP is 192.168.42.72
 1. Build the project with `mvn`
 1. Launch with `docker-compose up -d`
-1. `curl -s -X POST http://localhost:8001/services -d name=echo-service -d url=http://echo:8080/server/resources/message | jq .id`
+1. `curl -s -X POST http://localhost:8001/services -d name=echo-service -d url=http://echo:8080/server/resources/headers | jq -r .id`
 returns the service_id to use on the next line
 1. `curl -s -X POST http://localhost:8001/routes -d service.id=6906de36-1808-4e02-8170-643533652b51 -d 'paths[]=/echo'`
 try with `curl http://localhost:8000/echo`
