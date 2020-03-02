@@ -17,5 +17,8 @@ echo "🍸"
 echo
 echo "Application deployed to http://$HOST_IP:8000/echo/headers"
 echo
+echo "Keycloak deployed to http://$HOST_IP:8180/"
+echo "Konga deployed to http://$HOST_IP:8280/"
+echo
 echo Available users
 cat src/main/configuration/gateway/users.txt
