@@ -1,3 +1,2 @@
-FROM jboss/wildfly:15.0.1.Final
-# https://hub.docker.com/r/jboss/wildfly
+FROM jboss/wildfly:18.0.1.Final
 ADD /maven/server.war /opt/jboss/wildfly/standalone/deployments/
