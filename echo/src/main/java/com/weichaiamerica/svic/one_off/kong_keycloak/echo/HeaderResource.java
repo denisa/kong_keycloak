@@ -43,9 +43,12 @@ public class HeaderResource {
     }
 
     private Function<String, String> headerToString(final String name) {
-        if ("X-Userinfo".equals(name)) {
-            return s -> new String(Base64.getDecoder().decode(s));
+        switch (name) {
+            case "X-Userinfo":
+            case "X-ID-Token":
+                return s -> new String(Base64.getDecoder().decode(s));
+            default:
+                return identity();
         }
-        return identity();
     }
 }
