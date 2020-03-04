@@ -106,7 +106,7 @@ services:
       POSTGRES_PASSWORD: password
 
   keycloak:
-    image: jboss/keycloak:4.8.3.Final
+    image: jboss/keycloak:9.0.0
     init: true
     restart: on-failure
     depends_on:
@@ -126,7 +126,7 @@ services:
       KEYCLOAK_PASSWORD: admin
 
   demo-configuration:
-    image: jboss/keycloak:4.8.3.Final
+    image: curl_jq:1.0-SNAPSHOT
     init: true
     restart: on-failure
     depends_on:
