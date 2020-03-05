@@ -1,47 +1,23 @@
-# The webapp
-Launch with
-`docker run -p 8080:8080 -p 9990:9990 -it kong_keycloak`
+# Kong - Keycloak - Konga
+This project is a simple authenticating gateway build around [kong](https://konghq.com),
+[keycloak](https://www.keycloak.org) and [konga](https://github.com/pantsel/konga).
 
-`curl http://localhost:8080/server/resources/message`
+Kong ensures every request is authenticated, keycloak is the IdP and kong provides a visualization for kong.
+The [kong-oidc](https://github.com/nokia/kong-oidc) plugin handles the OIDC Relying Party (RP) functionality.
 
-```
-curl http://localhost:8080/server/resources/message
-No authorization header
-```
+This project also shows automated setup and configuration of the components in a local docker-compose deployment.
 
-```
-curl -H 'Authorization: Basic foo' http://localhost:8080/server/resources/message
-Not a Bearer  authorization
-```
+A simplistic webapp shows all headers passed to the back end services.
 
-```
-curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKb2UifQ.Cy-XkzE1ZokAApN3c1S0ri0HSrdn8aKQi4HNRrbCgUE' http://localhost:8080/server/resources/message
-```
+The project is a playground to explore these technologies and does not represent best-practices, especially not related
+to handling secrets in a docker deployment.
 
+## Use
+Launch with `./up`
 
-# The docker-compose
+The script ends with a link to the application (open it in a private browser window) and a list of all available users.
 
-Following assume that the mac IP is 192.168.42.72
-1. Build the project with `mvn`
-1. Launch with `docker-compose up -d`
-1. `curl -s -X POST http://localhost:8001/services -d name=echo-service -d url=http://echo:8080/server/resources/message | jq .id`
-returns the service_id to use on the next line
-1. `curl -s -X POST http://localhost:8001/routes -d service.id=6906de36-1808-4e02-8170-643533652b51 -d 'paths[]=/echo'`
-try with `curl http://localhost:8000/echo`
-1. at `http://localhost:8180` (user _admin_, password _admin_)
-    1. add a client:
-        + click the "Clients" link in the sidebar, and then the "Create" button
-        + fill in the "Client ID" as "kong", the Root URL as "http://192.168.42.72:8000", and click "Save"
-        + set the "Access Type" to "Confidential", and click the "Save"
-        + copy the secret from the "Credentials" page
-    1. create user;
-1. `curl -s -X POST http://localhost:8001/plugins -d name=oidc -d config.client_id=kong \
-  -d config.client_secret=2eddf3f7-1b13-4520-9d9a-541110a3bc38 \
-  -d config.discovery=http://192.168.42.72:8180/auth/realms/master/.well-known/openid-configuration \
-  | jq .`
-1. in safari, http://192.168.42.72:8000/echo
+Shut the system down with `./down`
 
 ## Update the ip address when moving to a new network
-1. `curl http://localhost:8001/plugins | jq '.data[] | select(.name=="oidc") | .id'` returns the oidc plugin id for use in 
-1. `curl -s -X PATCH http://localhost:8001/plugins/46f801fb-3ac9-46a8-a3da-860b9743528d -d config.discovery=http://192.168.42.72:8180/auth/realms/master/.well-known/openid-configuration`
-1. Update the Root URL in keycloak's kong client definition
+Run the `./up` command again and it will update the settings as necessary.

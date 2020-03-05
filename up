@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+HOST_IP=$(ipconfig getifaddr en0)
+export HOST_IP
+docker-compose up -d
+
+echo
+echo Completing set-up
+while [[ $(docker ps -a --filter name="demo-configuration" --filter 'exited=0' -q | wc -l) -lt 1 ]]; do
+    echo -n .
+    sleep 1
+done
+echo "🍸"
+
+echo
+echo "Application deployed to http://$HOST_IP:8000/echo/headers"
+echo
+echo "Keycloak deployed to http://$HOST_IP:8180/"
+echo "Konga deployed to http://$HOST_IP:8280/"
+echo
+echo Available users
+cat src/main/configuration/gateway/users.txt
