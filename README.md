@@ -13,6 +13,8 @@ The project is a playground to explore these technologies and does not represent
 to handling secrets in a docker deployment.
 
 ## Use
+Build the project with `mvn`
+
 Launch with `./up`
 
 The script ends with a link to the application (open it in a private browser window) and a list of all available users.
@@ -20,4 +22,10 @@ The script ends with a link to the application (open it in a private browser win
 Shut the system down with `./down`
 
 ## Update the ip address when moving to a new network
+Kong and keycloak are configured with each other’s _public_ IP addresses in order to redirect the browser during
+the authentication. Unless the computer has a fixed IP address, the IP address will change with the network.
+
 Run the `./up` command again and it will update the settings as necessary.
+
+# Caveat
+Build & tested on MacOS. Use at your own risk.
