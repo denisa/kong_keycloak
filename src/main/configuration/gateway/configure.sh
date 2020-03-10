@@ -34,7 +34,19 @@ client=$(curl -sS "http://keycloak:8080/auth/admin/realms/application/clients" \
 if [ -z "${client}" ]; then
   curl -sS -w "\n" -X POST "http://keycloak:8080/auth/admin/realms/application/clients" \
     -H "Authorization: Bearer ${admin_token}" -H "Content-Type: application/json" \
-    -d '{"clientId": "kong", "enabled": true, "publicClient": false, "redirectUris": ["http://'"${HOST_IP}"':8000/*"]}'
+    -d '{
+            "clientId": "kong", "enabled": true, "publicClient": false,
+            "redirectUris": ["http://'"${HOST_IP}"':8000/*"],
+            "protocolMappers": [
+                {
+                "name": "tenant", "protocol": "openid-connect", "protocolMapper": "oidc-hardcoded-claim-mapper", "consentRequired": false,
+                "config": {
+                    "claim.name": "tenant", "jsonType.label": "String", "claim.value": "application",
+                    "userinfo.token.claim": "true", "id.token.claim": "false", "access.token.claim": "false"
+                    }
+                }
+            ]
+        }'
 
   client_id=$(curl -sS "http://keycloak:8080/auth/admin/realms/application/clients" \
     -H "Authorization: Bearer ${admin_token}"  -H "Accept: application/json" |
@@ -46,7 +58,7 @@ else
 
   curl -sS -w "\n" -X PUT "http://keycloak:8080/auth/admin/realms/application/clients/${client_id}" \
     -H "Authorization: Bearer ${admin_token}" -H "Content-Type: application/json" \
-    -d "$(echo ${client} | jq '.redirectUris |= [ "http://'"${HOST_IP}"':8000/*" ] | .webOrigins |= [ "http://'"${HOST_IP}"'" ]')"
+    -d "$(echo "${client}" | jq '.redirectUris |= [ "http://'"${HOST_IP}"':8000/*" ] | .webOrigins |= [ "http://'"${HOST_IP}"'" ]')"
 
   echo Updated client kong in realm application
 fi
