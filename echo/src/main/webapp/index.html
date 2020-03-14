@@ -1,0 +1,45 @@
+<html>
+<head>
+    <title>Headers</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+
+<body>
+<h1>Headers received by the service</h1>
+<dl>
+</dl>
+</body>
+</html>
+
+<script>
+    fetch('api/headers',
+            {
+                credentials: 'same-origin',
+                headers: {'Accept': 'application/json'}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error, status = " + response.status);
+                }
+                return response.json();
+            })
+            .then(serverHeaders => {
+                let myList = document.querySelector('dl');
+                Object.getOwnPropertyNames(serverHeaders).sort().forEach(key => {
+                    let listItem = document.createElement('dt');
+                    listItem.innerText = key;
+                    myList.appendChild(listItem);
+
+                    serverHeaders[key].forEach(value => {
+                        let listItem = document.createElement('dd');
+                        listItem.innerText = value;
+                        myList.appendChild(listItem);
+                    });
+                })
+            })
+            .catch(error => {
+                let p = document.createElement('p');
+                p.innerText = 'Error: ' + error.message;
+                document.body.insertBefore(p, document.querySelector('dl'));
+            });
+</script>
