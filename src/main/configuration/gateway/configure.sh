@@ -70,10 +70,10 @@ secret=$(curl -sS "http://keycloak:8080/auth/admin/realms/application/clients/${
 #
 service_id=$(curl -sS http://kong:8001/services/application-service | jq -r .id)
 if [ "${service_id}" = 'null' ]; then
-  service_id=$(curl -sS -X POST http://kong:8001/services -d name=application-service -d url=http://echo:8080/server/resources | jq -r .id)
+  service_id=$(curl -sS -X POST http://kong:8001/services -d name=application-service -d url=http://echo:8080/server/ | jq -r .id)
   echo Created http://kong:8001/services/application-service
 else
-  curl -sS -w "\n" -X PATCH "http://kong:8001/services/${service_id}" -d url=http://echo:8080/server
+  curl -sS -w "\n" -X PATCH "http://kong:8001/services/${service_id}" -d url=http://echo:8080/server/
   echo Updated http://kong:8001/services/application-service
 fi
 
