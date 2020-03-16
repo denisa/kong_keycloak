@@ -79,10 +79,10 @@ fi
 
 route_id=$(curl -sS http://kong:8001/routes/ | jq -r '.data[] | select(.name=="application-route") | .id')
 if [ -z "${route_id}" ]; then
-  curl -sS -w "\n" -X POST http://kong:8001/routes -d name=application-route -d "service.id=${service_id}" -d 'paths[]=/echo'
+  curl -sS -w "\n" -X POST http://kong:8001/routes -d name=application-route -d "service.id=${service_id}" -d 'paths[]=/echo' -d 'paths[]=/logout'
   echo Created http://kong:8001/routes/application-route
 else
-  curl -sS -w "\n" -X PATCH "http://kong:8001/routes/${route_id}" -d 'paths[]=/echo'
+  curl -sS -w "\n" -X PATCH "http://kong:8001/routes/${route_id}" -d 'paths[]=/echo' -d 'paths[]=/logout'
   echo Updated http://kong:8001/routes/application-route
 fi
 
@@ -90,11 +90,14 @@ plugin_id=$(curl -sS http://kong:8001/plugins/ | jq -r '.data[] | select(.name==
 if [ -z "${plugin_id}" ]; then
   curl -sS -w "\n" -X POST http://kong:8001/plugins -d name=oidc -d config.client_id=kong \
     -d "config.client_secret=${secret}" \
-    -d "config.discovery=http://${HOST_IP}:8180/auth/realms/application/.well-known/openid-configuration"
+    -d "config.discovery=http://${HOST_IP}:8180/auth/realms/application/.well-known/openid-configuration" \
+    -d "config.redirect_after_logout_uri=http://${HOST_IP}:8180/auth/realms/application/protocol/openid-connect/logout?redirect_uri=http%3A%2F%2F${HOST_IP}%3A8000%2Fecho%2F"
+
   echo Created oidc plugin
 else
   curl -sS -w "\n" -X PATCH "http://kong:8001/plugins/${plugin_id}" \
-    -d "config.discovery=http://${HOST_IP}:8180/auth/realms/application/.well-known/openid-configuration"
+    -d "config.discovery=http://${HOST_IP}:8180/auth/realms/application/.well-known/openid-configuration" \
+    -d "config.redirect_after_logout_uri=http://${HOST_IP}:8180/auth/realms/application/protocol/openid-connect/logout?redirect_uri=http%3A%2F%2F${HOST_IP}%3A8000%2Fecho%2F"
   echo Updated oidc plugin
 fi
 
