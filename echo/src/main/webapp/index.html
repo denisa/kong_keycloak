@@ -5,8 +5,12 @@
 </head>
 
 <body>
+<a href="/logout">Log out</a>
 <h1>Headers received by the service</h1>
-<dl>
+<dl id="service">
+</dl>
+<h1>Headers received by the UI</h1>
+<dl id="response">
 </dl>
 </body>
 </html>
@@ -18,22 +22,33 @@
                 headers: {'Accept': 'application/json'}
             })
             .then(response => {
+                let myList = document.querySelector('#response');
+                response.headers.forEach((value,key,header) => {
+                    let dt = document.createElement('dt');
+                    dt.innerText = key;
+                    myList.appendChild(dt);
+
+                    let dd = document.createElement('dd');
+                    dd.innerText = value;
+                    myList.appendChild(dd);
+                });
+
                 if (!response.ok) {
                     throw new Error("HTTP error, status = " + response.status);
                 }
                 return response.json();
             })
             .then(serverHeaders => {
-                let myList = document.querySelector('dl');
+                let myList = document.querySelector('#service');
                 Object.getOwnPropertyNames(serverHeaders).sort().forEach(key => {
-                    let listItem = document.createElement('dt');
-                    listItem.innerText = key;
-                    myList.appendChild(listItem);
+                    let dt = document.createElement('dt');
+                    dt.innerText = key;
+                    myList.appendChild(dt);
 
                     serverHeaders[key].forEach(value => {
-                        let listItem = document.createElement('dd');
-                        listItem.innerText = value;
-                        myList.appendChild(listItem);
+                        let dd = document.createElement('dd');
+                        dd.innerText = value;
+                        myList.appendChild(dd);
                     });
                 })
             })
