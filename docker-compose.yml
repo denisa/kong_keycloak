@@ -27,7 +27,7 @@ services:
       retries: 3
 
   kong-migration:
-    image: kong_oidc:1.0-SNAPSHOT
+    image: kong_oidc
     init: true
     depends_on:
       - kong-db
@@ -48,7 +48,7 @@ services:
       KONG_ADMIN_ERROR_LOG:  /dev/stderr
 
   kong:
-    image: kong_oidc:1.0-SNAPSHOT
+    image: kong_oidc
     init: true
     restart: on-failure
     depends_on:
@@ -123,10 +123,10 @@ services:
       DB_USER:           keycloak
       DB_PASSWORD:       password
       KEYCLOAK_USER:     admin
-      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_PASSWORD: admin123
 
   demo-configuration:
-    image: curl_jq:1.0-SNAPSHOT
+    image: curl_jq
     init: true
     restart: on-failure
     depends_on:
@@ -136,14 +136,14 @@ services:
       - kong-net
     environment:
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_PASSWORD=admin123
       - HOST_IP
     entrypoint: /home/conf/configure.sh
     volumes:
       - ./src/main/configuration/gateway:/home/conf/:ro
 
   echo:
-    image: echo:1.0-SNAPSHOT
+    image: echo
     init: true
     depends_on:
       - kong
