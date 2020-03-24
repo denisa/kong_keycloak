@@ -19,7 +19,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>%a:%v</name>
+                            <name>%a</name>
                             <build>
                                 <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
                             </build>
