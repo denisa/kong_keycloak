@@ -16,6 +16,11 @@ Categories:
 
 This project is _not_ released in any formal way, so this file is informative onle.
 
+## [ 2.3.0 ] - 2020-03-28
+### Changed
+- update keycloak to 9.0.2
+- identity-first login flow
+
 ## [ 2.2.0 ] - 2020-03-24
 ### Changed
 - use 'latest' version for own docker images
